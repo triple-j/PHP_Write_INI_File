@@ -1,6 +1,6 @@
 <?php
 /**
- *  PHP_Write_INI_File is a set of functions to make it easy to write INI 
+ *  PHP_Write_INI_File is a set of functions to make it easy to write INI
  *  files that are parsable by PHP's built-in `parse_ini_file()` function.
  *
  *  Copyright (C) 2015 Jeremie Jarosh
@@ -20,23 +20,32 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  *  USA
  */
- 
+
 function build_ini_string( $ini_data ) {
 	$ini_string  = "";
 	$add_newline = false;
-	
+
 	if ( !is_array($ini_data) || empty($ini_data) ) { return false; }
-	
+
+	// sort array making sure values not in sections are at the top
+	foreach ( $ini_data as $key=>$val ) {
+		if ( is_array($val) ) {
+			unset($ini_data[$key]);
+			$ini_data[$key] = $val;
+		}
+	}
+
+	// build ini string
 	foreach ( $ini_data as $key=>$val ) {
 		if ( is_array($val) ) {
 			// section
-			if ( $add_newline ) { 
+			if ( $add_newline ) {
 				$ini_string .= PHP_EOL;
 				$add_newline = false;
 			}
-			
+
 			$ini_string .= "[$key]" . PHP_EOL;
-			
+
 			foreach ($val as $sub_key => $sub_val) {
 				if (is_array($sub_val)) {
 					// array
@@ -65,7 +74,7 @@ function build_ini_string( $ini_data ) {
 		}
 		$add_newline = true;
 	}
-	
+
 	return $ini_string;
 }
 
